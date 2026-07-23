@@ -1,0 +1,6 @@
+alpaca-py
+pandas
+numpy
+pandas_market_calendars
+python-dotenv
+pytest
