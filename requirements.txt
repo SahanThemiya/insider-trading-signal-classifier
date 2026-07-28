@@ -5,3 +5,5 @@ pandas_market_calendars
 python-dotenv
 pytest
 requests
+scikit-learn
+xgboost

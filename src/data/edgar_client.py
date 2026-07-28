@@ -18,7 +18,12 @@ def _get(url: str) -> requests.Response:
 
 def cik_lookup(tickers: list[str]) -> dict[str, str]:
     data = _get("https://www.sec.gov/files/company_tickers.json").json()
-    lookup = {row["ticker"]: str(row["cik_str"]).zfill(10) for row in data.values()}
+    lookup: dict[str, str] = {}
+    for row in data.values():
+        # company_tickers.json can list a ticker more than once (reused/OTC
+        # entries); keep the first (primary) match instead of silently
+        # overwriting it with a later, unrelated CIK.
+        lookup.setdefault(row["ticker"], str(row["cik_str"]).zfill(10))
     return {ticker: lookup[ticker] for ticker in tickers if ticker in lookup}
 
 
@@ -31,5 +36,9 @@ def fetch_form4_index(cik10: str) -> pd.DataFrame:
 def fetch_form4_xml(cik10: str, accession_number: str, primary_document: str) -> bytes:
     accession_no_dashes = accession_number.replace("-", "")
     cik_no_zeros = str(int(cik10))
-    url = f"https://www.sec.gov/Archives/edgar/data/{cik_no_zeros}/{accession_no_dashes}/{primary_document}"
+    # primaryDocument from the submissions API points at the XSLT-rendered
+    # display copy (e.g. "xslF345X06/form4.xml"), which returns HTML, not XML.
+    # The raw, parsable XML sits under the same filename one level up.
+    raw_document = primary_document.rsplit("/", 1)[-1]
+    url = f"https://www.sec.gov/Archives/edgar/data/{cik_no_zeros}/{accession_no_dashes}/{raw_document}"
     return _get(url).content

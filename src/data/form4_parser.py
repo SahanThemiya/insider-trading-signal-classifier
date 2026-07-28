@@ -34,6 +34,9 @@ def parse_form4_xml(xml_bytes: bytes, accession_number: str) -> list[dict]:
         coding = txn.find("transactionCoding")
         amounts = txn.find("transactionAmounts")
         post = txn.find("postTransactionAmounts")
+        ownership_nature = txn.find("ownershipNature")
+        direct_or_indirect = _val(ownership_nature,
+                                  "directOrIndirectOwnership") if ownership_nature is not None else None
 
         footnote_ids = [fn.get("id") for fn in txn.findall("footnoteId")]
         txn_footnote_text = " ".join(footnotes.get(fid, "") for fid in footnote_ids).lower()
@@ -53,6 +56,7 @@ def parse_form4_xml(xml_bytes: bytes, accession_number: str) -> list[dict]:
             "price": float(_val(amounts, "transactionPricePerShare") or 0),
             "acquired_disposed": _val(amounts, "transactionAcquiredDisposedCode"),
             "shares_owned_after": float(_val(post, "sharesOwnedFollowingTransaction") or 0),
+            "direct_or_indirect": direct_or_indirect,
             "is_10b5_1": is_10b5_1,
         })
     return rows
