@@ -10,7 +10,7 @@ _REQUEST_DELAY = 0.15
 
 
 def _get(url: str) -> requests.Response:
-    response = requests.get(url, headers=_HEADERS)
+    response = requests.get(url, headers=_HEADERS, timeout=30)
     response.raise_for_status()
     time.sleep(_REQUEST_DELAY)
     return response

@@ -6,7 +6,7 @@ from src.data.trading_calendar import trading_window
 from src.labeling.car import cumulative_abnormal_return
 
 TICKER = "XOM"
-TRADE_DATE = pd.Timestamp("2024-03-01")
+TRADE_DATE = pd.Timestamp("2016-01-01")
 HORIZON = 30
 
 start, end = trading_window(TRADE_DATE, days_before=30, days_after=60)

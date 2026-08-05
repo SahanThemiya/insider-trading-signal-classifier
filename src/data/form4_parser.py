@@ -8,6 +8,7 @@ def _val(parent, tag: str) -> str | None:
     if node is None:
         return None
     value = node.find("value")
+    text = value.text if value is not None else node.text
     return value.text if value is not None else node.text
 
 
