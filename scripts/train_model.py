@@ -14,7 +14,6 @@ TEST_FRAC = 0.25
 
 print(f"Using dataset: {INPUT_PATH}")
 
-
 def print_threshold_table(y_test, y_proba, model_name, step=0.05):
     print(f"\n{model_name} — precision/recall at fixed thresholds:")
     print(f"{'threshold':>10} {'precision':>10} {'recall':>10} {'flagged':>10}")
@@ -36,10 +35,8 @@ train_df, test_df = time_based_split(df, test_frac=TEST_FRAC)
 X_train_raw = build_feature_matrix(train_df)
 X_test_raw = build_feature_matrix(test_df)
 
-fill_values = {
-    "trade_size_intensity": X_train_raw["trade_size_intensity"].median(),
-    "ownership_change_pct": X_train_raw["ownership_change_pct"].median(),
-}
+numeric_cols = X_train_raw.select_dtypes(include="number").columns
+fill_values = {col: X_train_raw[col].median() for col in numeric_cols}
 X_train = impute(X_train_raw, fill_values)
 X_test = impute(X_test_raw, fill_values)
 

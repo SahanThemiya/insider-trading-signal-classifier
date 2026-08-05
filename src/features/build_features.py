@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 def ownership_change_pct(df: pd.DataFrame) -> pd.Series:
     signed_shares = df["shares"].where(df["acquired_disposed"] == "A", -df["shares"])
     shares_before = (df["shares_owned_after"] - signed_shares).astype(float)
